@@ -1,0 +1,26 @@
+{
+    "id": "3DB6758E",
+    "path": "~/Documents/GitHub/extendedCosinor/R/cosinorExtendedModel.R",
+    "project_path": "R/cosinorExtendedModel.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1779198980419.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "117,19",
+        "scrollLine": "100"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1779136691,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1779136691,
+    "read_only": false,
+    "read_only_alternatives": []
+}

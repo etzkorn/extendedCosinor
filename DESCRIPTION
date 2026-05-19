@@ -1,0 +1,16 @@
+Package: extendedCosinor
+Type: Package
+Title: Extended Cosinor Model
+Version: 0.0.9000
+Authors@R: c(
+    person(
+      "Lacey", "Etzkorn",
+      email = "letzkor1@jhmi.edu",
+      role = c("aut", "cre")
+    )
+  )
+Description: Estimate parameters from the extended cosinor model.
+License: CC0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
