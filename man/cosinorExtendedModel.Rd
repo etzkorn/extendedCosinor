@@ -9,7 +9,7 @@ cosinorExtendedModel(
   window = 1,
   export_ts = FALSE,
   export_cosinor_param = TRUE,
-  export_nls_outcome = FALSE,
+  export_nls_outcome = TRUE,
   maxiter = 1000,
   maxfev = 600
 )
@@ -33,14 +33,14 @@ minpack.lm::nls.lm.}
 \item{maxfev}{Passed to [minpack.lm::nls.lm.control].}
 }
 \value{
-A list with up to two elements:
+A list with upf to two elements:
 \itemize{
  \item \code{estimates}: a one-row tibble of extended cosinor parameters, derived estimates, model fit diagnostics (see \code{export_nls_outcome}), and basic cosinor parameters/estimates (see \code{export_cosinor_param}).
      \itemize{
-         \item The estimates of the five primary extended cosinor parameters \code{min_ext}, \code{amp_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext} (see "details").
-         \item Secondary estimates from the extended cosinor model fit including the maximum, minimum, range (amplitude), midpoint (mesor), time of activity rises above and falls below the mesor (\code{up_mesor_ext} and \code{down_mesor_ext}), total daily time the curve stays above the mesor (\code{hours_above_mesor_ext}), model resuduals (\code{rss_ext} and \code{F_pseudo_ext}).
+         \item The estimates of the five primary extended cosinor parameters \code{mu_ext}, \code{gamma_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext} (see "details").
+         \item Secondary estimates from the extended cosinor model fit including the maximum, minimum, range (amplitude), midpoint (mesor), time of activity rises above and falls below the mesor (\code{up_mesor_ext} and \code{down_mesor_ext}), total daily time the curve stays above the mesor (\code{hours_above_mesor_ext}), model resuduals (\code{rss_ext}, model R^2 (\code{R2_ext}), and \code{F_pseudo_ext}).
          \item Convergence codes (\code{niter} and \code{info}) and messages (\code{message}) from minpack.lm::nls.lm.
-         \item Parameters and secondary estimates from the three-parameter cosinor model: midpoint (\code{mesor_cos}), range (\code{amp_cos}), acrotime (\code{acrotime_cos}),  minimum(\code{minimum_cos}), and residual sum of squares (\code{rss_cos}).
+         \item Parameters and secondary estimates from the three-parameter cosinor model: midpoint (\code{mesor_cos}), range (\code{amp_cos}), acrotime (\code{acrotime_cos}),  minimum(\code{minimum_cos}), residual sum of squares (\code{rss_cos}), and model sum of squares (\code{R2_ext}).
          \item \code{ndays}: the number of unique days of data.
      }
  \item \code{cosinor_ts}: a tibble containing epoch-level cosinor and extended cosinor model fits and observed data (see \code{export_ts}).
@@ -54,7 +54,22 @@ parameter space to avoid issues with boundaries.
 }
 \details{
 The model specified by Marler et al uses the following equations:
-\deqn{y(t) = \min_{\mathrm{ext}} + \mathrm{amp}_{\mathrm{ext}}\cdot \mathrm{expit}\bigg(\beta_{\mathrm{ext}} \Big(\cos(\left[t - \phi_{\mathrm{ext}}\right]\cdot 2\pi/24)-\alpha_{\mathrm{ext}} \Big) \bigg) + \epsilon(t)}
+\deqn{y(t) = \mu_{\mathrm{ext}} + \gamma_{\mathrm{ext}}\cdot \mathrm{expit}\bigg(\beta_{\mathrm{ext}} \Big(\cos(\left[t - \phi_{\mathrm{ext}}\right]\cdot 2\pi/24)-\alpha_{\mathrm{ext}} \Big) \bigg) + \epsilon(t)}
+}
+\examples{
+t <- seq(0, 1440*7,by = 1)[-1]/60
+x <- sqrt(exp(2 + 3*cos((t- 5)/24*2*pi) + rnorm(length(t),1)))
+cosOut <- cosinorExtendedModel(x = x, window = 1, export_ts = TRUE)
+cosOut$estimates
+plot(
+    data = cosOut$cosinor_ts,
+    y~time_across_days
+)
+lines(
+    data = cosOut$cosinor_ts,
+    y_ext~time_across_days, col = "red"
+)
+
 }
 \references{
 Marler MR, Gehrman P, Martin JL, Ancoli‐Israel S.

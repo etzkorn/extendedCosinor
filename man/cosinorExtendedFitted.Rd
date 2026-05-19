@@ -7,7 +7,7 @@
 cosinorExtendedFitted(par_ext, t)
 }
 \arguments{
-\item{par_ext}{named vector of length 5 with \code{min_ext}, \code{amp_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext}.}
+\item{par_ext}{named vector of length 5 with \code{mu_ext}, \code{gamma_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext}.}
 
 \item{t}{time in hours since midnight.}
 }

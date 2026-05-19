@@ -12,7 +12,7 @@ cosinorExtendedTransformParameters(par_optim, phi_cos)
 \item{phi_cos}{a centering reference value for the transformation of phi.}
 }
 \value{
-Named vector of length 5 with \code{min_ext}, \code{amp_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext}.
+Named vector of length 5 with \code{mu_ext}, \code{gamma_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext}.
 }
 \description{
 Transform parameters from those used in optimization routine to those specified in model (see [cosinorExtendedModel]).

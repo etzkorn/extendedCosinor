@@ -7,7 +7,7 @@
 #' parameter space to avoid issues with boundaries.
 #'
 #' @details The model specified by Marler et al uses the following equations:
-#' \deqn{y(t) = \min_{\mathrm{ext}} + \mathrm{amp}_{\mathrm{ext}}\cdot \mathrm{expit}\bigg(\beta_{\mathrm{ext}} \Big(\cos(\left[t - \phi_{\mathrm{ext}}\right]\cdot 2\pi/24)-\alpha_{\mathrm{ext}} \Big) \bigg) + \epsilon(t)}
+#' \deqn{y(t) = \mu_{\mathrm{ext}} + \gamma_{\mathrm{ext}}\cdot \mathrm{expit}\bigg(\beta_{\mathrm{ext}} \Big(\cos(\left[t - \phi_{\mathrm{ext}}\right]\cdot 2\pi/24)-\alpha_{\mathrm{ext}} \Big) \bigg) + \epsilon(t)}
 #'
 #' @param x input timeseries with missing epochs represented as "NA" values. Note
 #' \code{length(x)*window/1440} must be an integer.
@@ -25,14 +25,28 @@
 #' \itemize{
 #'  \item \code{estimates}: a one-row tibble of extended cosinor parameters, derived estimates, model fit diagnostics (see \code{export_nls_outcome}), and basic cosinor parameters/estimates (see \code{export_cosinor_param}).
 #'      \itemize{
-#'          \item The estimates of the five primary extended cosinor parameters \code{min_ext}, \code{amp_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext} (see "details").
-#'          \item Secondary estimates from the extended cosinor model fit including the maximum, minimum, range (amplitude), midpoint (mesor), time of activity rises above and falls below the mesor (\code{up_mesor_ext} and \code{down_mesor_ext}), total daily time the curve stays above the mesor (\code{hours_above_mesor_ext}), model resuduals (\code{rss_ext} and \code{F_pseudo_ext}).
+#'          \item The estimates of the five primary extended cosinor parameters \code{mu_ext}, \code{gamma_ext}, \code{alpha_ext}, \code{beta_ext}, and \code{phi_ext} (see "details").
+#'          \item Secondary estimates from the extended cosinor model fit including the maximum, minimum, range (amplitude), midpoint (mesor), time of activity rises above and falls below the mesor (\code{up_mesor_ext} and \code{down_mesor_ext}), total daily time the curve stays above the mesor (\code{hours_above_mesor_ext}), model resuduals (\code{rss_ext}, model R^2 (\code{R2_ext}), and \code{F_pseudo_ext}).
 #'          \item Convergence codes (\code{niter} and \code{info}) and messages (\code{message}) from minpack.lm::nls.lm.
-#'          \item Parameters and secondary estimates from the three-parameter cosinor model: midpoint (\code{mesor_cos}), range (\code{amp_cos}), acrotime (\code{acrotime_cos}),  minimum(\code{minimum_cos}), and residual sum of squares (\code{rss_cos}).
+#'          \item Parameters and secondary estimates from the three-parameter cosinor model: midpoint (\code{mesor_cos}), range (\code{amp_cos}), acrotime (\code{acrotime_cos}),  minimum(\code{minimum_cos}), residual sum of squares (\code{rss_cos}), and model sum of squares (\code{R2_ext}).
 #'          \item \code{ndays}: the number of unique days of data.
 #'      }
 #'  \item \code{cosinor_ts}: a tibble containing epoch-level cosinor and extended cosinor model fits and observed data (see \code{export_ts}).
 #' }
+#'
+#' @examples
+#' t <- seq(0, 1440*7,by = 1)[-1]/60
+#' x <- sqrt(exp(2 + 3*cos((t- 5)/24*2*pi) + rnorm(length(t),1)))
+#' cosOut <- cosinorExtendedModel(x = x, window = 1, export_ts = TRUE)
+#' cosOut$estimates
+#' plot(
+#'     data = cosOut$cosinor_ts,
+#'     y~time_across_days
+#' )
+#' lines(
+#'     data = cosOut$cosinor_ts,
+#'     y_ext~time_across_days, col = "red"
+#' )
 #'
 #' @references
 #' Marler MR, Gehrman P, Martin JL, Ancoli‐Israel S.
@@ -46,7 +60,7 @@ cosinorExtendedModel <- function(
         window = 1,
         export_ts = FALSE,
         export_cosinor_param = TRUE,
-        export_nls_outcome = FALSE,
+        export_nls_outcome = TRUE,
         maxiter = 1000,
         maxfev = 600
 ){
@@ -57,25 +71,26 @@ cosinorExtendedModel <- function(
         time = rep(1:dim, ndays)/(60/window),
         Y = x
     )
-    cosOut = cosinor::cosinor.lm(
-        Y ~ time(time) + 1,
-        period = 24,
-        data = tmp.dat[!is.na(tmp.dat$Y), ]
+    cosOut = cosinorBasicModel(
+        x,
+        window = window,
+        export_ts = TRUE
     )
-    e_cos <- cosOut$coefficients
-    names(e_cos) = NULL
+    e_cos <- cosOut$estimates
+    e_cos$tss_y <- NULL
+
     exCosOut = minpack.lm::nls.lm(
         c( # starting parameters
-            max(e_cos[1] - e_cos[2], 0),
-            log(2 * e_cos[2]),
+            e_cos$mesor_cos - e_cos$amp_cos/2,
+            log(2 * e_cos$amp_cos),
             0,
             log(2),
             0
         ),
         fn = cosinorExtendedResid,
-        phi_cos = (-1) * cosinor2:::correct.acrophase(cosOut) * 24/(2 * pi),
         Y=tmp.dat$Y,
         t=tmp.dat$t,
+        phi_cos = e_cos$phi_cos,
         control = minpack.lm::nls.lm.control(
             maxiter = maxiter,
             maxfev = maxfev
@@ -83,56 +98,51 @@ cosinorExtendedModel <- function(
     )
     e_ext <- cosinorExtendedTransformParameters(
         exCosOut$par,
-        phi_cos = (-1) * cosinor2:::correct.acrophase(cosOut) * 24/(2 * pi)
+        phi_cos = e_cos$phi_cos
     )
     e_24 = cosinorExtendedFitted(e_ext,t = seq(0,24, length = 1441)[-1])
-    estimates_out = tibble(
-        t(e_ext)
-    ) %>% mutate(
+    estimates_out = tibble::as_tibble(
+        as.data.frame(t(e_ext))
+    )
+    estimates_out = dplyr::mutate(
+        estimates_out,
         ndays = ndays,
         acrotime_ext = e_ext["phi_ext"],
-        maximum_ext = e_ext["min_ext"] + e_ext["amp_ext"] * expit(e_ext["beta_ext"]*(1-e_ext["alpha_ext"])),
-        minimum_ext = e_ext["min_ext"] + e_ext["amp_ext"] * expit(-e_ext["beta_ext"]*(1+e_ext["alpha_ext"])),
+        maximum_ext = e_ext["mu_ext"] + e_ext["gamma_ext"] * expit(e_ext["beta_ext"]*(1-e_ext["alpha_ext"])),
+        minimum_ext = e_ext["mu_ext"] + e_ext["gamma_ext"] * expit(-e_ext["beta_ext"]*(1+e_ext["alpha_ext"])),
         amplitude_ext = (maximum_ext - minimum_ext),
         mesor_ext = (maximum_ext + minimum_ext)/2,
         hours_above_mesor_ext = 24*mean(e_24 > mesor_ext),
         up_mesor_ext = ( e_ext["phi_ext"] - hours_above_mesor_ext/2)%%24,
         down_mesor_ext = ( e_ext["phi_ext"] + hours_above_mesor_ext/2)%%24,
-        rss_cos = sum((cosOut$fit$residuals)^2),
+        up_mesor_deriv_ext = 100*diff(cosinorExtendedFitted(e_ext, t = up_mesor_ext + c(0,0.01))),
         rss_ext = sum(residuals(exCosOut)^2),
-        F_pseudo_ext = ((rss_cos - rss_ext)/2)/
-            (rss_ext/(nrow(tmp.dat) - 5))
+        tss_y = sum((x - mean(x))^2),
+        F_pseudo_ext = ((cosOut$estimates$rss_cos - rss_ext)/2)/
+            (rss_ext/(nrow(tmp.dat) - 5)),
+        R2_ext = (tss_y - rss_ext)/tss_y
     )
     if(export_cosinor_param){
-        estimates_out = estimates_out %>% mutate(
-            mesor_cos = e_cos[1],
-            amp_cos = e_cos[2],
-            acrotime_cos = e_cos[3],
-            minimum_cos = e_cos[1] - e_cos[2]/2
-        )
+        estimates_out = cbind(estimates_out, e_cos)
     }
     if(export_nls_outcome){
-        estimates_out = estimates_out %>% tibble(
-            niter = exCosOut$niter,
-            info = exCosOut$info,
-            message = exCosOut$message
+        estimates_out = cbind(
+            estimates_out,
+            tibble::tibble(
+                niter = exCosOut$niter,
+                info = exCosOut$info,
+                message = exCosOut$message
+            )
         )
     }
     ret = list(
         estimates = estimates_out
-        #cosinor_ts = cosinor_ts
     )
     if(export_ts){
-        ret$cosinor_ts = tibble(
-            time = tmp.dat$time,
-            time_across_days = tmp.dat$time + (tmp.dat$day-1)*24,
-            y = tmp.dat$Y,
-        ) %>% mutate(
-            y_cos = cosOut$fit$fitted.values,
-            y_ext = cosinorExtendedFitted(
-                e_ext,
-                t = time
-            )
+        ret$cosinor_ts = cosOut$cosinor_ts
+        ret$cosinor_ts$y_ext = cosinorExtendedFitted(
+            e_ext,
+            t = cosOut$cosinor_ts$time_across_days
         )
     }
     return(ret)

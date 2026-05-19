@@ -38,13 +38,14 @@
 #' rhythms with symmetric non‐sinusoidal shapes. Statistics in medicine.
 #' 2006 Nov 30;25(22):3893-904.
 #'
-#' @export
 cosinorExtendedModel0 <- function(
         x,
         window = 1,
         export_ts = FALSE,
         export_cosinor_param = TRUE,
         export_nls_outcome = FALSE,
+        lower = c(0, 0, -1, 0, -3),
+        upper = c(Inf, Inf, 1, Inf, 27),
         maxiter = 1000,
         maxfev = 600
 ){
@@ -52,7 +53,7 @@ cosinorExtendedModel0 <- function(
     n.days = length(x)/dim
     tmp.dat = data.frame(time = rep(1:dim, n.days)/(60/window),
                          Y = x)
-    fit = cosinor.lm(Y ~ time(time) + 1, data = tmp.dat, period = 24)
+    fit = cosinor::cosinor.lm(Y ~ time(time) + 1, data = tmp.dat, period = 24)
     mesor = fit$coefficients[1]
     amp = fit$coefficients[2]
     acr = correct.acrophase(fit)
@@ -63,7 +64,7 @@ cosinorExtendedModel0 <- function(
     e_phi0 = acrotime
     e_par0 = c(e_min0, e_amp0, 0, 2, e_phi0)
     tmp.dat = tmp.dat[!is.na(tmp.dat$Y), ]
-    fit_nls = nls.lm(e_par0, fn = fn_obj, lower = lower, upper = upper,
+    fit_nls = minpack.lm::nls.lm(e_par0, fn = fn_obj, lower = lower, upper = upper,
                      tmp.dat = tmp.dat, control = nls.lm.control(maxiter = 1000))
     if (export_ts == TRUE) {
         fittedYext = tmp.dat$Y - residuals(fit_nls)
