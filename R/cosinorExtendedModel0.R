@@ -4,7 +4,7 @@
 #' Fit the five parameter cosinor model from Marler et al. (2006).
 #' Using the current approach of ActExtendCosinor in ActCR.
 #'
-#' @details The model specified by Marler et al uses the following equations:
+#' @details The model specified by Marler et al. (2006) uses the following equations:
 #' \deqn{y(t) = \min_{\mathrm{ext}} + \mathrm{amp}_{\mathrm{ext}}\cdot \mathrm{expit}\bigg(\beta_{\mathrm{ext}} \Big(\cos(\left[t - \phi_{\mathrm{ext}}\right]\cdot 2\pi/24)-\alpha_{\mathrm{ext}} \Big) \bigg) + \epsilon(t)}
 #'
 #' @param x input timeseries with missing epochs represented as "NA" values. Note

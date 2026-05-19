@@ -73,7 +73,7 @@ cosinorExtendedModel <- function(
             0
         ),
         fn = cosinorExtendedResid,
-        theta0 = (-1) * cosinor2:::correct.acrophase(cosOut) * 24/(2 * pi),
+        phi_cos = (-1) * cosinor2:::correct.acrophase(cosOut) * 24/(2 * pi),
         Y=tmp.dat$Y,
         t=tmp.dat$t,
         control = minpack.lm::nls.lm.control(
