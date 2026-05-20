@@ -20,7 +20,7 @@ cosinorExtendedModel(
 
 \item{window}{epoch duration in minutes.}
 
-\item{export_ts}{Should the original data and fitted values be exported?}
+\item{export_ts}{Should the original time series and fitted values be exported?}
 
 \item{export_cosinor_param}{Should estimates from the basic three-parameter
 cosinor model be added to the output?}
@@ -33,7 +33,7 @@ minpack.lm::nls.lm.}
 \item{maxfev}{Passed to [minpack.lm::nls.lm.control].}
 }
 \value{
-A list with upf to two elements:
+A list with up to two elements:
 \itemize{
  \item \code{estimates}: a one-row tibble of extended cosinor parameters, derived estimates, model fit diagnostics (see \code{export_nls_outcome}), and basic cosinor parameters/estimates (see \code{export_cosinor_param}).
      \itemize{

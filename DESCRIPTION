@@ -7,9 +7,17 @@ Authors@R: c(
       "Lacey", "Etzkorn",
       email = "letzkor1@jhmi.edu",
       role = c("aut", "cre")
+    ),
+    person(
+      "Keran", "Chamberlin",
+      email = "kchamb26@jh.edu",
+      role = c("ctb")
     )
   )
-Description: Estimate parameters from the extended cosinor model.
+Description: Estimate parameters from the extended cosinor model. 
+    This package borrows heavily from Junrui Di's "ActExtendCosinor" in ActCR, but 
+    adds additional functionality and measures derived from the fit of the extended 
+    cosinor model. 
 License: CC0
 Encoding: UTF-8
 LazyData: true
@@ -19,3 +27,7 @@ Imports:
     tidyverse,
     tibble,
     dplyr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

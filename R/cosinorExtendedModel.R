@@ -12,7 +12,7 @@
 #' @param x input timeseries with missing epochs represented as "NA" values. Note
 #' \code{length(x)*window/1440} must be an integer.
 #' @param window epoch duration in minutes.
-#' @param export_ts Should the original data and fitted values be exported?
+#' @param export_ts Should the original time series and fitted values be exported?
 #' @param export_nls_outcome Should the message and convergence code be added to the output from
 #' minpack.lm::nls.lm.
 #' @param export_cosinor_param Should estimates from the basic three-parameter

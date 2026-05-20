@@ -63,7 +63,7 @@ cosinorBasicModel <- function(
             amp_cos = e_coef[2]/cos(e_phi*2*pi/24),
             rss_cos = sum((x - predict(cosOut))^2),
             tss_y = sum((x - mean(x))^2),
-            R2_cos = (tss_y - rss_cos)/rss_cos
+            R2_cos = (tss_y - rss_cos)/tss_y
         )
     )
 
