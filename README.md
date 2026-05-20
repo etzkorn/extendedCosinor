@@ -34,12 +34,12 @@ cosOut <- cosinorExtendedModel(
     export_nls_outcome = TRUE
 )
 cosOut$estimates
-#>      mu_ext gamma_ext alpha_ext beta_ext  phi_ext ndays acrotime_ext maximum_ext minimum_ext amplitude_ext mesor_ext
-#> 1 0.9675011  42.68538 0.9999957 2.323242 5.012382     7     5.012382     22.3103    1.373191       20.9371  11.84174
+#>     mu_ext gamma_ext alpha_ext beta_ext  phi_ext ndays acrotime_ext maximum_ext minimum_ext amplitude_ext mesor_ext
+#> 1 1.128725  42.53914 0.9999976 2.429431 4.985856     7     4.985856    22.39835     1.45626      20.94209  11.92731
 #>   hours_above_mesor_ext up_mesor_ext down_mesor_ext up_mesor_deriv_ext  rss_ext    tss_y F_pseudo_ext    R2_ext mesor_cos  phi_cos
-#> 1              7.666667     1.179049       8.845715           4.155728 366775.5 938145.1     847.4838 0.6090418  8.422023 5.018342
-#>    amp_cos rss_cos   R2_cos niter info                                                 message
-#> 1 10.05604  428480 0.543269    44    1 Relative error in the sum of squares is at most `ftol'.
+#> 1              7.483333     1.244189       8.727522           4.262575 355182.3 925118.1     928.0516 0.6160682  8.354191 4.993069
+#>    amp_cos rss_cos    R2_cos niter info                                                 message
+#> 1 10.00497  420617 0.5453369    44    1 Relative error in the sum of squares is at most `ftol'.
 ```
 
 ``` r
@@ -47,16 +47,16 @@ cosOut$cosinor_ts
 #> # A tibble: 10,080 × 4
 #>    time_across_days     y y_cos y_ext
 #>               <dbl> <dbl> <dbl> <dbl>
-#>  1           0.0167  4.41  11.0  7.45
-#>  2           0.0333  7.60  11.1  7.51
-#>  3           0.05    7.38  11.1  7.56
-#>  4           0.0667 11.4   11.1  7.62
-#>  5           0.0833  4.13  11.2  7.67
-#>  6           0.1     8.51  11.2  7.73
-#>  7           0.117   6.56  11.3  7.78
-#>  8           0.133   6.09  11.3  7.84
-#>  9           0.15    5.23  11.4  7.89
-#> 10           0.167   5.23  11.4  7.95
+#>  1           0.0167 15.8   11.0  7.26
+#>  2           0.0333  4.40  11.0  7.31
+#>  3           0.05    5.73  11.1  7.37
+#>  4           0.0667 12.8   11.1  7.42
+#>  5           0.0833 20.7   11.2  7.48
+#>  6           0.1     5.65  11.2  7.53
+#>  7           0.117   8.77  11.3  7.59
+#>  8           0.133  10.9   11.3  7.64
+#>  9           0.15    7.86  11.3  7.70
+#> 10           0.167   5.64  11.4  7.75
 #> # ℹ 10,070 more rows
 ```
 
@@ -68,8 +68,8 @@ The five primary model parameter estimates are the following:
 
 ``` r
 cosOut$estimates %>% select(mu_ext:phi_ext)
-#>      mu_ext gamma_ext alpha_ext beta_ext  phi_ext
-#> 1 0.9675011  42.68538 0.9999957 2.323242 5.012382
+#>     mu_ext gamma_ext alpha_ext beta_ext  phi_ext
+#> 1 1.128725  42.53914 0.9999976 2.429431 4.985856
 ```
 
 These correspond to the model outlined by Marler et al (2006). We’ve
@@ -142,9 +142,9 @@ from the fitted function and residuals.
 ``` r
 cosOut$estimates %>% select(acrotime_ext:up_mesor_deriv_ext,F_pseudo_ext,R2_ext)
 #>   acrotime_ext maximum_ext minimum_ext amplitude_ext mesor_ext hours_above_mesor_ext up_mesor_ext down_mesor_ext up_mesor_deriv_ext
-#> 1     5.012382     22.3103    1.373191       20.9371  11.84174              7.666667     1.179049       8.845715           4.155728
+#> 1     4.985856    22.39835     1.45626      20.94209  11.92731              7.483333     1.244189       8.727522           4.262575
 #>   F_pseudo_ext    R2_ext
-#> 1     847.4838 0.6090418
+#> 1     928.0516 0.6160682
 ```
 
 The connection of each estimate to the fitted function is depicted
@@ -272,8 +272,8 @@ actcrOut <- ActCR::ActExtendCosinor(
     export_ts = TRUE
 )
 actcrOut$params %>% as.data.frame
-#>     minimum      amp alpha    beta acrotime F_pseudo  UpMesor DownMesor    MESOR ndays
-#> 1 0.9674834 42.68559     1 2.32323 5.012382  847.484 5.012382  5.012382 22.31028     7
+#>    minimum      amp alpha     beta acrotime F_pseudo  UpMesor DownMesor    MESOR ndays
+#> 1 1.128678 42.53928     1 2.429404 4.985856 928.0518 4.985856  4.985856 22.39832     7
 ```
 
 The plot below shows how certain estimates from the
@@ -421,20 +421,20 @@ cosOut$estimates %>% transmute(
     mesor_ext, mesor_cos
 )
 #>   amplitude_ext 2 * amp_cos acrotime_ext  phi_cos mesor_ext mesor_cos
-#> 1       20.9371    20.11209     5.012382 5.018342  11.84174  8.422023
+#> 1      20.94209    20.00994     4.985856 4.993069  11.92731  8.354191
 ```
 
 The pseudo F-statistic indicates the degree to which the extended
 cosinor model fits the data better than the basic cosinor model.
-`R2_ext` tells us that 60.9% of the variation in the epoch level data
+`R2_ext` tells us that 61.6% of the variation in the epoch level data
 can be predicted by the extended cosinor fit. `R2_cos` tells us that
-54.3% of the variation in the epoch level data can be predicted by the
+54.5% of the variation in the epoch level data can be predicted by the
 basic cosinor fit.
 
 ``` r
 cosOut$estimates %>% select(
     F_pseudo_ext, R2_ext, R2_cos
 )
-#>   F_pseudo_ext    R2_ext   R2_cos
-#> 1     847.4838 0.6090418 0.543269
+#>   F_pseudo_ext    R2_ext    R2_cos
+#> 1     928.0516 0.6160682 0.5453369
 ```
