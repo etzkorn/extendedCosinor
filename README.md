@@ -1,10 +1,19 @@
-extendedCosinorVignette
-================
 
 ``` r
 library(extendedCosinor)
 library(tidyverse)
+#> ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+#> ✔ dplyr     1.1.4     ✔ readr     2.1.5
+#> ✔ forcats   1.0.0     ✔ stringr   1.5.1
+#> ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
+#> ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+#> ✔ purrr     1.0.4     
+#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+#> ✖ dplyr::filter() masks stats::filter()
+#> ✖ dplyr::lag()    masks stats::lag()
+#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 library(cluster)
+#> Warning: package 'cluster' was built under R version 4.5.2
 ```
 
 ## Data Requirements
@@ -23,7 +32,7 @@ x <- sqrt(exp(2 + 3*cos((t_hours- 5)/24*2*pi) + rnorm(length(t_hours),1)))
 plot(x~t_hours)
 ```
 
-![](/Users/etzkornlacey/Documents/GitHub/extendedCosinor/README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 cosOut <- cosinorExtendedModel(
@@ -34,12 +43,16 @@ cosOut <- cosinorExtendedModel(
     export_nls_outcome = TRUE
 )
 cosOut$estimates
-#>     mu_ext gamma_ext alpha_ext beta_ext  phi_ext ndays acrotime_ext maximum_ext minimum_ext amplitude_ext mesor_ext
-#> 1 1.128725  42.53914 0.9999976 2.429431 4.985856     7     4.985856    22.39835     1.45626      20.94209  11.92731
-#>   hours_above_mesor_ext up_mesor_ext down_mesor_ext up_mesor_deriv_ext  rss_ext    tss_y F_pseudo_ext    R2_ext mesor_cos  phi_cos
-#> 1              7.483333     1.244189       8.727522           4.262575 355182.3 925118.1     928.0516 0.6160682  8.354191 4.993069
-#>    amp_cos rss_cos    R2_cos niter info                                                 message
-#> 1 10.00497  420617 0.5453369    44    1 Relative error in the sum of squares is at most `ftol'.
+#>     mu_ext gamma_ext alpha_ext beta_ext  phi_ext ndays acrotime_ext maximum_ext
+#> 1 1.019981  41.80338 0.9999968 2.321484 5.044113     7     5.044113    21.92175
+#>   minimum_ext amplitude_ext mesor_ext hours_above_mesor_ext up_mesor_ext
+#> 1    1.418673      20.50308  11.67021              7.666667     1.210779
+#>   down_mesor_ext up_mesor_deriv_ext  rss_ext    tss_y F_pseudo_ext    R2_ext
+#> 1       8.877446           4.068392 378539.4 926490.8     777.5532 0.5914267
+#>   mesor_cos  phi_cos  amp_cos  rss_cos    R2_cos niter info
+#> 1  8.323908 5.036383 9.855329 436968.1 0.5283622    44    1
+#>                                                   message
+#> 1 Relative error in the sum of squares is at most `ftol'.
 ```
 
 ``` r
@@ -47,16 +60,16 @@ cosOut$cosinor_ts
 #> # A tibble: 10,080 × 4
 #>    time_across_days     y y_cos y_ext
 #>               <dbl> <dbl> <dbl> <dbl>
-#>  1           0.0167 15.8   11.0  7.26
-#>  2           0.0333  4.40  11.0  7.31
-#>  3           0.05    5.73  11.1  7.37
-#>  4           0.0667 12.8   11.1  7.42
-#>  5           0.0833 20.7   11.2  7.48
-#>  6           0.1     5.65  11.2  7.53
-#>  7           0.117   8.77  11.3  7.59
-#>  8           0.133  10.9   11.3  7.64
-#>  9           0.15    7.86  11.3  7.70
-#> 10           0.167   5.64  11.4  7.75
+#>  1           0.0167  6.59  10.8  7.28
+#>  2           0.0333  3.91  10.9  7.33
+#>  3           0.05    5.03  10.9  7.38
+#>  4           0.0667  6.50  11.0  7.44
+#>  5           0.0833  8.57  11.0  7.49
+#>  6           0.1     7.59  11.0  7.54
+#>  7           0.117  13.8   11.1  7.60
+#>  8           0.133   6.99  11.1  7.65
+#>  9           0.15    5.39  11.2  7.71
+#> 10           0.167   3.59  11.2  7.76
 #> # ℹ 10,070 more rows
 ```
 
@@ -69,7 +82,7 @@ The five primary model parameter estimates are the following:
 ``` r
 cosOut$estimates %>% select(mu_ext:phi_ext)
 #>     mu_ext gamma_ext alpha_ext beta_ext  phi_ext
-#> 1 1.128725  42.53914 0.9999976 2.429431 4.985856
+#> 1 1.019981  41.80338 0.9999968 2.321484 5.044113
 ```
 
 These correspond to the model outlined by Marler et al (2006). We’ve
@@ -132,7 +145,7 @@ cosOut$cosinor_ts %>% filter(
 )
 ```
 
-![](/Users/etzkornlacey/Documents/GitHub/extendedCosinor/README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ### Secondary Estimates
 
@@ -141,10 +154,12 @@ from the fitted function and residuals.
 
 ``` r
 cosOut$estimates %>% select(acrotime_ext:up_mesor_deriv_ext,F_pseudo_ext,R2_ext)
-#>   acrotime_ext maximum_ext minimum_ext amplitude_ext mesor_ext hours_above_mesor_ext up_mesor_ext down_mesor_ext up_mesor_deriv_ext
-#> 1     4.985856    22.39835     1.45626      20.94209  11.92731              7.483333     1.244189       8.727522           4.262575
+#>   acrotime_ext maximum_ext minimum_ext amplitude_ext mesor_ext
+#> 1     5.044113    21.92175    1.418673      20.50308  11.67021
+#>   hours_above_mesor_ext up_mesor_ext down_mesor_ext up_mesor_deriv_ext
+#> 1              7.666667     1.210779       8.877446           4.068392
 #>   F_pseudo_ext    R2_ext
-#> 1     928.0516 0.6160682
+#> 1     777.5532 0.5914267
 ```
 
 The connection of each estimate to the fitted function is depicted
@@ -261,7 +276,7 @@ cosOut$cosinor_ts %>% filter(
 )
 ```
 
-![](/Users/etzkornlacey/Documents/GitHub/extendedCosinor/README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ### Comparison to ActCR::ActExtendCosinor
 
@@ -272,8 +287,10 @@ actcrOut <- ActCR::ActExtendCosinor(
     export_ts = TRUE
 )
 actcrOut$params %>% as.data.frame
-#>    minimum      amp alpha     beta acrotime F_pseudo  UpMesor DownMesor    MESOR ndays
-#> 1 1.128678 42.53928     1 2.429404 4.985856 928.0518 4.985856  4.985856 22.39832     7
+#>    minimum      amp alpha     beta acrotime F_pseudo  UpMesor DownMesor
+#> 1 1.019981 41.80353     1 2.321482 5.044113 777.5534 5.044113  5.044113
+#>      MESOR ndays
+#> 1 21.92175     7
 ```
 
 The plot below shows how certain estimates from the
@@ -343,7 +360,7 @@ actcrOut$cosinor_ts %>% filter(
 )
 ```
 
-![](/Users/etzkornlacey/Documents/GitHub/extendedCosinor/README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ### Cosinor Model Estimates
 
@@ -405,7 +422,7 @@ cosOut$cosinor_ts %>% filter(
 )
 ```
 
-![](/Users/etzkornlacey/Documents/GitHub/extendedCosinor/README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ### Comparing Basic and Extended Cosinor Model Estimates
 
@@ -421,14 +438,14 @@ cosOut$estimates %>% transmute(
     mesor_ext, mesor_cos
 )
 #>   amplitude_ext 2 * amp_cos acrotime_ext  phi_cos mesor_ext mesor_cos
-#> 1      20.94209    20.00994     4.985856 4.993069  11.92731  8.354191
+#> 1      20.50308    19.71066     5.044113 5.036383  11.67021  8.323908
 ```
 
 The pseudo F-statistic indicates the degree to which the extended
 cosinor model fits the data better than the basic cosinor model.
-`R2_ext` tells us that 61.6% of the variation in the epoch level data
+`R2_ext` tells us that 59.1% of the variation in the epoch level data
 can be predicted by the extended cosinor fit. `R2_cos` tells us that
-54.5% of the variation in the epoch level data can be predicted by the
+52.8% of the variation in the epoch level data can be predicted by the
 basic cosinor fit.
 
 ``` r
@@ -436,5 +453,5 @@ cosOut$estimates %>% select(
     F_pseudo_ext, R2_ext, R2_cos
 )
 #>   F_pseudo_ext    R2_ext    R2_cos
-#> 1     928.0516 0.6160682 0.5453369
+#> 1     777.5532 0.5914267 0.5283622
 ```
