@@ -3,3 +3,4 @@ output: github_document
 ---
 
 ```{r, child='vignettes/extendedCosinorVignette.Rmd'}
+   

@@ -19,8 +19,8 @@ A list with up to two elements:
 \itemize{
  \item \code{estimates}: a one-row tibble of cosinor parameters and model fit summaries.
      \itemize{
-         \item The estimates of the five primary extended cosinor parameters \code{mesor_cos}, \code{amp_cos}, \code{phi_cos}.
-         \item Secondary estimates from the extended cosinor model fit including the model resuduals (\code{rss_cos} and model R^2 (\code{R2_cos})).
+         \item The estimates of the three primary cosinor parameters \code{mesor_cos}, \code{gam_cos}, \code{phi_cos}.
+         \item Secondary estimates from the extended cosinor model fit including the amplitude and model resuduals (\code{rss_cos} and model R^2 (\code{R2_cos})).
      }
  \item \code{cosinor_ts}: a tibble containing epoch-level cosinor model fits and observed data (see \code{export_ts}).
 }
@@ -33,7 +33,7 @@ parameter space to avoid issues with boundaries.
 }
 \details{
 The cosinor model is:
-\deqn{y(t) = \mesor_{\mathrm{cos}} + \mathrm{amp}_{\mathrm{cos}}\cdot \cos(\left[ t - \phi_{\mathrm{ext}} \right]\cdot 2\pi/24) + \epsilon(t)}
+\deqn{y(t) = \mesor_{\mathrm{cos}} + \mathrm{gam}_{\mathrm{cos}}\cdot \cos(\left[ t - \phi_{\mathrm{ext}} \right]\cdot 2\pi/24) + \epsilon(t)}
 }
 \examples{
 t <- seq(0, 1440*7,by = 1)[-1]/60

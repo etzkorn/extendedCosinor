@@ -81,8 +81,8 @@ cosinorExtendedModel <- function(
 
     exCosOut = minpack.lm::nls.lm(
         c( # starting parameters
-            e_cos$mesor_cos - e_cos$amp_cos/2,
-            log(2 * e_cos$amp_cos),
+            e_cos$mesor_cos - e_cos$gam_cos/2,
+            log(2 * e_cos$gam_cos),
             0,
             log(2),
             0
@@ -111,8 +111,10 @@ cosinorExtendedModel <- function(
         maximum_ext = e_ext["mu_ext"] + e_ext["gamma_ext"] * expit(e_ext["beta_ext"]*(1-e_ext["alpha_ext"])),
         minimum_ext = e_ext["mu_ext"] + e_ext["gamma_ext"] * expit(-e_ext["beta_ext"]*(1+e_ext["alpha_ext"])),
         amplitude_ext = (maximum_ext - minimum_ext),
-        mesor_ext = (maximum_ext + minimum_ext)/2,
+        mesor_ext = mean(e_24),
         hours_above_mesor_ext = 24*mean(e_24 > mesor_ext),
+        midpoint_ext = (maximum_ext + minimum_ext)/2,
+        hours_above_midpoint_ext = 24*mean(e_24 > midpoint_ext),
         up_mesor_ext = ( e_ext["phi_ext"] - hours_above_mesor_ext/2)%%24,
         down_mesor_ext = ( e_ext["phi_ext"] + hours_above_mesor_ext/2)%%24,
         up_mesor_deriv_ext = 100*diff(cosinorExtendedFitted(e_ext, t = up_mesor_ext + c(0,0.01))),

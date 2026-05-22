@@ -7,7 +7,7 @@
 #' parameter space to avoid issues with boundaries.
 #'
 #' @details The cosinor model is:
-#' \deqn{y(t) = \mesor_{\mathrm{cos}} + \mathrm{amp}_{\mathrm{cos}}\cdot \cos(\left[ t - \phi_{\mathrm{ext}} \right]\cdot 2\pi/24) + \epsilon(t)}
+#' \deqn{y(t) = \mesor_{\mathrm{cos}} + \mathrm{gam}_{\mathrm{cos}}\cdot \cos(\left[ t - \phi_{\mathrm{ext}} \right]\cdot 2\pi/24) + \epsilon(t)}
 #'
 #' @param x input timeseries with missing epochs represented as "NA" values. Note
 #' \code{length(x)*window/1440} must be an integer.
@@ -19,8 +19,8 @@
 #' \itemize{
 #'  \item \code{estimates}: a one-row tibble of cosinor parameters and model fit summaries.
 #'      \itemize{
-#'          \item The estimates of the five primary extended cosinor parameters \code{mesor_cos}, \code{amp_cos}, \code{phi_cos}.
-#'          \item Secondary estimates from the extended cosinor model fit including the model resuduals (\code{rss_cos} and model R^2 (\code{R2_cos})).
+#'          \item The estimates of the three primary cosinor parameters \code{mesor_cos}, \code{gam_cos}, \code{phi_cos}.
+#'          \item Secondary estimates from the extended cosinor model fit including the amplitude and model resuduals (\code{rss_cos} and model R^2 (\code{R2_cos})).
 #'      }
 #'  \item \code{cosinor_ts}: a tibble containing epoch-level cosinor model fits and observed data (see \code{export_ts}).
 #' }
@@ -60,7 +60,8 @@ cosinorBasicModel <- function(
         estimates = tibble::tibble(
             mesor_cos = e_coef[1],
             phi_cos = e_phi,
-            amp_cos = e_coef[2]/cos(e_phi*2*pi/24),
+            gam_cos = e_coef[2]/cos(e_phi*2*pi/24),
+            amplitude_cos = 2*e_coef[2]/cos(e_phi*2*pi/24),
             rss_cos = sum((x - predict(cosOut))^2),
             tss_y = sum((x - mean(x))^2),
             R2_cos = (tss_y - rss_cos)/tss_y

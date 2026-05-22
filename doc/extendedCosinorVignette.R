@@ -282,14 +282,14 @@ cosOut$cosinor_ts %>% filter(
     xintercept = cosOut$estimates$phi_cos, color = "orange"
 ) + geom_segment(
     aes(
-        yend = cosOut$estimates$mesor_cos - cosOut$estimates$amp_cos,
-        y = cosOut$estimates$mesor_cos + cosOut$estimates$amp_cos,
+        yend = cosOut$estimates$mesor_cos - 0.5*cosOut$estimates$amplitude_cos,
+        y = cosOut$estimates$mesor_cos + 0.5*cosOut$estimates$amplitude_cos,
         x = cosOut$estimates$phi_cos + 12, 
         yend = cosOut$estimates$phi_cos + 12
     ), color = "green", arrow = arrow(ends = "both")
 ) + geom_label(
     data = tibble(
-        name = c("mesor_cos", "2*amp_cos", "phi_cos"),
+        name = c("mesor_cos", "amplitude_cos", "phi_cos"),
         x = c(
             20,
             cosOut$estimates$phi_cos + 12, 
@@ -297,8 +297,8 @@ cosOut$cosinor_ts %>% filter(
         ),
         y = c(
             cosOut$estimates$mesor_cos, 
-            cosOut$estimates$mesor_cos + cosOut$estimates$amp_cos + 3,
-            cosOut$estimates$mesor_cos + cosOut$estimates$amp_cos + 10
+            cosOut$estimates$mesor_cos + 0.5*cosOut$estimates$amplitude_cos + 3,
+            cosOut$estimates$mesor_cos + 0.5*cosOut$estimates$amplitude_cos + 10
         )
     ),
     aes(
@@ -312,7 +312,7 @@ cosOut$cosinor_ts %>% filter(
 
 ## -----------------------------------------------------------------------------
 cosOut$estimates %>% transmute(
-    amplitude_ext, 2*amp_cos, 
+    amplitude_ext, amplitude_cos, 
     acrotime_ext, phi_cos,
     mesor_ext, mesor_cos
 )
